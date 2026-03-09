@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_dgii_ecf_xml_wizard_form" model="ir.ui.view">
+        <field name="name">dgii.ecf.xml.wizard.form</field>
+        <field name="model">dgii.ecf.xml.wizard</field>
+        <field name="arch" type="xml">
+            <form string="XML del e-CF">
+                <group>
+                    <field name="move_id" readonly="1"/>
+                    <field name="xml_type" widget="radio"/>
+                </group>
+                <separator/>
+                <field name="xml_content"
+                       widget="ace"
+                       options="{'mode': 'xml'}"
+                       readonly="1"
+                       style="min-height: 400px; font-family: monospace;"/>
+                <footer>
+                    <button name="action_download_xml"
+                            type="object"
+                            string="Descargar XML"
+                            class="btn-primary"
+                            icon="fa-download"/>
+                    <button string="Cerrar"
+                            class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

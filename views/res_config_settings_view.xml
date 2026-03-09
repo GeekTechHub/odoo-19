@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_ecf" model="ir.ui.view">
+        <field name="name">res.config.settings.view.ecf</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='account']" position="after">
+                <app string="Facturación Electrónica (e-CF)"
+                     name="l10n_do_ecf"
+                     img="l10n_do_ecf/static/description/icon.png">
+
+                    <block title="Certificado Digital">
+                        <setting help="Certificado PKCS#12 (.p12) emitido por INDOTEL o validado por la DGII">
+                            <label for="ecf_certificate" string="Certificado .p12"/>
+                            <div>
+                                <field name="ecf_certificate"
+                                       filename="ecf_certificate_filename"
+                                       widget="binary"/>
+                                <field name="ecf_certificate_filename" invisible="1"/>
+                            </div>
+                        </setting>
+                        <setting help="Contraseña de protección del archivo .p12">
+                            <label for="ecf_certificate_password" string="Contraseña"/>
+                            <div>
+                                <field name="ecf_certificate_password"
+                                       password="True"
+                                       placeholder="Contraseña del certificado"/>
+                            </div>
+                        </setting>
+                    </block>
+
+                    <block title="Conexión API DGII">
+                        <setting help="Seleccione el entorno de la API de la DGII">
+                            <label for="ecf_api_env" string="Entorno"/>
+                            <div>
+                                <field name="ecf_api_env" widget="radio"/>
+                            </div>
+                        </setting>
+                        <setting help="Token de autenticación provisto por la DGII">
+                            <label for="ecf_api_token" string="Token API"/>
+                            <div>
+                                <field name="ecf_api_token"
+                                       password="True"
+                                       placeholder="Token de acceso DGII"/>
+                            </div>
+                        </setting>
+                    </block>
+
+                    <block title="Datos del Emisor">
+                        <setting help="Nombre comercial que aparecerá en los comprobantes">
+                            <label for="ecf_trade_name" string="Nombre Comercial"/>
+                            <div>
+                                <field name="ecf_trade_name"
+                                       placeholder="Nombre comercial de la empresa"/>
+                            </div>
+                        </setting>
+                        <setting help="Código de actividad económica según DGII (6 dígitos)">
+                            <label for="ecf_business_activity" string="Actividad Económica"/>
+                            <div>
+                                <field name="ecf_business_activity"
+                                       placeholder="ej: 472100"/>
+                            </div>
+                        </setting>
+                    </block>
+
+                </app>
+            </xpath>
+        </field>
+    </record>
+

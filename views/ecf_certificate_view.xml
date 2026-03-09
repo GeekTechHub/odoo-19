@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── Vista formulario del certificado ─────────────────────────────── -->
+    <record id="view_ecf_certificate_form" model="ir.ui.view">
+        <field name="name">ecf.certificate.form</field>
+        <field name="model">ecf.certificate</field>
+        <field name="arch" type="xml">
+            <form string="Certificado Digital e-CF">
+                <header>
+                    <button name="action_validate"
+                            type="object"
+                            string="Validar Certificado"
+                            class="btn-primary"
+                            icon="fa-check"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,valid,expired"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon"
+                            title="Expirado"
+                            bg_color="bg-danger"
+                            attrs="{'invisible': [('state','!=','expired')]}"/>
+                    <group>
+                        <group string="Información">
+                            <field name="name"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Estado">
+                            <field name="serial_number" readonly="1"/>
+                            <field name="subject" readonly="1"/>
+                            <field name="date_start" readonly="1"/>
+                            <field name="date_end" readonly="1"
+                                   decoration-danger="state=='expired'"
+                                   decoration-warning="state=='draft'"/>
+                        </group>
+                    </group>
+                    <group string="Archivo del Certificado">
+                        <field name="certificate_file"
+                               filename="certificate_filename"
+                               widget="binary"
+                               required="1"/>
+                        <field name="certificate_filename" invisible="1"/>
+                        <field name="password"
+                               password="True"
+                               required="1"
+                               placeholder="Contraseña del archivo .p12"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ── Vista lista ──────────────────────────────────────────────────── -->
+    <record id="view_ecf_certificate_tree" model="ir.ui.view">
+        <field name="name">ecf.certificate.tree</field>
+        <field name="model">ecf.certificate</field>
+        <field name="arch" type="xml">
+            <tree string="Certificados Digitales"
+                  decoration-danger="state=='expired'"
+                  decoration-success="state=='valid'">
+                <field name="name"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="serial_number"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ── Acción de ventana ─────────────────────────────────────────────── -->
+    <record id="action_ecf_certificate" model="ir.actions.act_window">
+        <field name="name">Certificados Digitales e-CF</field>
+        <field name="res_model">ecf.certificate</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ── Menú ─────────────────────────────────────────────────────────── -->
+    <menuitem id="menu_ecf_root"
+              name="Facturación Electrónica"
+              parent="account.menu_finance"
+              sequence="99"/>
+    <menuitem id="menu_ecf_certificates"
+              name="Certificados Digitales"
+              parent="menu_ecf_root"
+              action="action_ecf_certificate"
+              sequence="10"/>
+
+</odoo>

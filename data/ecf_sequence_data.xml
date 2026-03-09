@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Secuencias de prueba para tipos de e-CF -->
+        <record id="seq_ecf_e31" model="ir.sequence">
+            <field name="name">e-CF e31 Factura Crédito Fiscal</field>
+            <field name="code">ecf.e31</field>
+            <field name="prefix">E31</field>
+            <field name="padding">10</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="seq_ecf_e32" model="ir.sequence">
+            <field name="name">e-CF e32 Factura Consumo</field>
+            <field name="code">ecf.e32</field>
+            <field name="prefix">E32</field>
+            <field name="padding">10</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="seq_ecf_e33" model="ir.sequence">
+            <field name="name">e-CF e33 Nota de Débito</field>
+            <field name="code">ecf.e33</field>
+            <field name="prefix">E33</field>
+            <field name="padding">10</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="seq_ecf_e34" model="ir.sequence">
+            <field name="name">e-CF e34 Nota de Crédito</field>
+            <field name="code">ecf.e34</field>
+            <field name="prefix">E34</field>
+            <field name="padding">10</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+    </data>
+</odoo>

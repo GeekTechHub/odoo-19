@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── Vista formulario: extensión de account.move ──────────────────── -->
+    <record id="view_account_move_ecf_form" model="ir.ui.view">
+        <field name="name">account.move.ecf.form</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Barra de estado: agregar estado e-CF -->
+            <xpath expr="//header" position="inside">
+                <field name="ecf_state"
+                       widget="statusbar"
+                       statusbar_visible="not_sent,sent,accepted"
+                       attrs="{'invisible': [('ecf_enabled', '=', False)]}"/>
+            </xpath>
+
+            <!-- Botones en la barra superior -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <!-- Botón: Enviar e-CF -->
+                <button name="action_send_ecf"
+                        type="object"
+                        string="Enviar e-CF"
+                        icon="fa-paper-plane"
+                        class="oe_stat_button"
+                        attrs="{
+                            'invisible': [
+                                '|',
+                                ('ecf_enabled', '=', False),
+                                ('state', '!=', 'posted'),
+                                ('ecf_state', 'in', ['accepted', 'accepted_with_obs'])
+                            ]
+                        }"
+                        confirm="¿Confirma que desea enviar este comprobante a la DGII?"/>
+
+                <!-- Botón: Consultar estado -->
+                <button name="action_check_ecf_status"
+                        type="object"
+                        string="Estado DGII"
+                        icon="fa-refresh"
+                        class="oe_stat_button"
+                        attrs="{
+                            'invisible': [
+                                '|',
+                                ('ecf_enabled', '=', False),
+                                ('ecf_track_id', '=', False)
+                            ]
+                        }"/>
+
+                <!-- Botón: Ver XML -->
+                <button name="action_view_ecf_xml"
+                        type="object"
+                        string="XML e-CF"
+                        icon="fa-code"
+                        class="oe_stat_button"
+                        attrs="{
+                            'invisible': [
+                                '|',
+                                ('ecf_enabled', '=', False),
+                                ('ecf_xml', '=', False)
+                            ]
+                        }"/>
+            </xpath>
+
+            <!-- Pestaña e-CF después de las pestañas principales -->
+            <xpath expr="//page[@name='other_info']" position="after">
+                <page name="ecf_info"
+                      string="Factura Electrónica (e-CF)"
+                      attrs="{'invisible': [('ecf_enabled', '=', False)]}">
+
+                    <group>
+                        <group string="Identificación e-CF">
+                            <field name="ecf_type"/>
+                            <field name="ecf_state"/>
+                            <field name="ecf_track_id"/>
+                            <field name="ecf_security_code"/>
+                        </group>
+                        <group string="Fechas">
+                            <field name="ecf_send_date"/>
+                            <field name="ecf_acceptance_date"/>
+                        </group>
+                    </group>
+
+                    <group string="Respuesta DGII">
+                        <field name="ecf_response_code" readonly="1"/>
+                        <field name="ecf_response_message" readonly="1" widget="text"/>
+                    </group>
+
+                    <!-- Código QR del e-CF -->
+                    <group string="Código QR e-CF"
+                           attrs="{'invisible': [('ecf_qr_code', '=', False)]}">
+                        <field name="ecf_qr_code"
+                               widget="image"
+                               options="{'size': [200, 200]}"
+                               readonly="1"
+                               nolabel="1"/>
+                    </group>
+
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- ── Filtros en lista de facturas ─────────────────────────────────── -->
+    <record id="view_account_move_ecf_filter" model="ir.ui.view">
+        <field name="name">account.move.ecf.filter</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='draft']" position="after">
+                <separator/>
+                <filter name="ecf_not_sent"
+                        string="e-CF Pendiente de Envío"
+                        domain="[('ecf_enabled','=',True),('ecf_state','=','not_sent'),('state','=','posted')]"/>
+                <filter name="ecf_accepted"
+                        string="e-CF Aceptados"
+                        domain="[('ecf_enabled','=',True),('ecf_state','in',['accepted','accepted_with_obs'])]"/>
+                <filter name="ecf_rejected"
+                        string="e-CF Rechazados"
+                        domain="[('ecf_enabled','=',True),('ecf_state','=','rejected')]"/>
+                <filter name="ecf_error"
+                        string="e-CF con Error"
+                        domain="[('ecf_enabled','=',True),('ecf_state','=','error')]"/>
+                <separator/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ── Columnas adicionales en vista lista ───────────────────────────── -->
+    <record id="view_account_move_ecf_list" model="ir.ui.view">
+        <field name="name">account.move.ecf.list</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_invoice_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='payment_state']" position="after">
+                <field name="ecf_state"
+                       optional="show"
+                       decoration-success="ecf_state in ('accepted','accepted_with_obs')"
+                       decoration-danger="ecf_state == 'rejected'"
+                       decoration-warning="ecf_state in ('sent','error')"
+                       decoration-muted="ecf_state == 'not_sent'"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_dgii_ecf_xml_wizard_user,dgii.ecf.xml.wizard user,model_dgii_ecf_xml_wizard,account.group_account_user,1,1,1,1
+access_dgii_ecf_xml_wizard_manager,dgii.ecf.xml.wizard manager,model_dgii_ecf_xml_wizard,account.group_account_manager,1,1,1,1
+access_ecf_certificate_user,ecf.certificate user,model_ecf_certificate,account.group_account_user,1,0,0,0
+access_ecf_certificate_manager,ecf.certificate manager,model_ecf_certificate,account.group_account_manager,1,1,1,1
