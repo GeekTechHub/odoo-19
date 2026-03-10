@@ -18,6 +18,14 @@ class ECFXmlGenerator:
     """Genera el XML del e-CF a partir de un account.move de Odoo."""
 
     def generate(self, move):
+
+    if not move.ecf_type:
+        raise ValueError("La factura no tiene definido el tipo de e-CF (ecf_type).")
+
+    root = etree.Element(
+        '{%s}ECF' % ECF_NAMESPACE,
+        nsmap={None: ECF_NAMESPACE},
+    )
         """
         Genera el XML completo del e-CF.
 
@@ -40,17 +48,19 @@ class ECFXmlGenerator:
             self._add_referencia(root, move)
 
         xml_bytes = etree.tostring(
-            root,
-            pretty_print=True,
-            xml_declaration=True,
-            encoding='UTF-8',
-        )
-        return xml_bytes.decode('utf-8')
+    root,
+    pretty_print=True,
+    xml_declaration=True,
+    encoding='UTF-8',
+)
 
+self._validate_xml(xml_bytes)
+
+return xml_bytes.decode('utf-8')
     # ── Secciones del XML ────────────────────────────────────────────────────
 
     def _add_encabezado(self, parent, move):
-        enc = etree.SubElement(parent, 'Encabezado')
+        enc = etree.SubElement(parent, '{%s}Encabezado' % ECF_NAMESPACE)
 
         version = etree.SubElement(enc, 'Version')
         version.text = '1.0'
@@ -58,7 +68,7 @@ class ECFXmlGenerator:
         # IdDoc
         id_doc = etree.SubElement(enc, 'IdDoc')
         self._tag(id_doc, 'TipoeCF', move.ecf_type or 'e32')
-        self._tag(id_doc, 'eNCF', move.ref or '')
+        self._tag(id_doc, 'eNCF', move.name or move.ref or '')
         self._tag(
             id_doc, 'FechaVencimientoSecuencia',
             move.invoice_date_due.strftime('%d-%m-%Y')
@@ -150,7 +160,11 @@ class ECFXmlGenerator:
             l.price_subtotal for l in move.invoice_line_ids
             if not l.display_type
         )
-        itbis_total = move._get_tax_amount()
+        itbis_total = sum(
+    line.price_total - line.price_subtotal
+    for line in move.invoice_line_ids
+    if not line.display_type
+)
 
         self._tag(resumen, 'MontoGravadoTotal', '%.2f' % subtotal)
         self._tag(resumen, 'MontoGravadoI1', '%.2f' % subtotal)
@@ -171,7 +185,7 @@ class ECFXmlGenerator:
     def _add_referencia(self, parent, move):
         """Sección de referencia para notas de crédito/débito."""
         ref_move = move.reversed_entry_id
-        referencia = etree.SubElement(parent, 'FechaHoraFirma')
+        ref_doc = etree.SubElement(parent, 'InformacionReferencia')
         # Referencia al e-CF original
         ref_doc = etree.SubElement(parent, 'InformacionReferencia')
         self._tag(ref_doc, 'ENCFModificado', ref_move.ref or '')
@@ -219,8 +233,9 @@ class ECFXmlGenerator:
     @staticmethod
     def _get_uom(line):
         if line.product_uom_id:
-            return line.product_uom_id.name[:3].upper()
         return 'UND'
+            return line.product_uom_id.name[:3].upper()
+        
 
     @staticmethod
     def _get_line_tax(line):
